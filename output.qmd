@@ -1,15 +1,13 @@
 ---
-title: "SMART-r"
+title: "Hackathon Project"
 format: html
 editor: visual
 
 params:
-  type : "Physician"
-  service_line : "ON"
   npi : "1194143776"
 ---
 
-## Exceptional Comments
+## Provider Recognition
 
 ```{r}
 #| echo: false
@@ -19,6 +17,7 @@ params:
 library(tidyverse)
 library(janitor)
 library(dplyr)
+library(gt)
 
 #import & clean data
 
@@ -28,6 +27,8 @@ commentdata<-ptexp_sampledata[-c(2535,2536), ]%>% #remove extra lines of info
   clean_names()
 
 commentdata$npi_num<-as.character(commentdata$npi_num)
+
+save(commentdata,file="G:/Press Ganey II/Reports/Ad Hoc/DEEP DIVE/Key Driver Reports/data/commentdata.Rdata")
 
 name_filter<-commentdata%>%
   filter(npi_num == params$npi)%>%
@@ -59,7 +60,15 @@ commentdata$check1 <- grepl(last_nm,  y)
 commentdata$check2 <- grepl(first_nm, y)
 
 findata <- commentdata %>%
-  filter(check1 == 'TRUE' | check2 == 'TRUE') 
-  
-findata$response
+  filter(check1 == 'TRUE' | check2 == 'TRUE') %>%
+  select(response) %>%
+  rename('Exceptional Comments' = response) %>%
+  gt() %>%
+  cols_align(align="left",columns = everything())%>%
+  tab_options(column_labels.background.color = 'dodgerblue4')%>%
+  tab_style(style=cell_text(align="center"), 
+            locations = cells_column_labels(columns = everything())
+            )
+
+findata
 ```
