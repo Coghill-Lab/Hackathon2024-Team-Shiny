@@ -37,8 +37,11 @@ ui <-
                                                            )
                                                          ),
                                                          selectizeInput("mrn_column","MRN Column:", choices = NULL, selected = 1),
-                                                         selectizeInput("hiv_present_column","HIV Indicator Column:", choices = NULL, selected = 1)
+                                                         selectizeInput("hiv_present_column","HIV Indicator Column:", choices = NULL, selected = 1),
                                                          # Filters
+                                                         selectizeInput("visit_type", "Visit types:", choices = NULL, selected = NULL, multiple = TRUE),
+                                                         airDatepickerInput("visit_date_range", label = "Select visit date:", 
+                                                         range = TRUE, clearButton = TRUE)
                                                          )
                                       ),
                                       shiny::mainPanel(
@@ -225,9 +228,15 @@ server <- function(input, output, session) {
       hiv_col_pred <- grep("hiv",colnames(df),ignore.case = T, value = T)[1]
       updateSelectizeInput(session,"mrn_column", choices = colnames(df), selected = mrn_col_pred, server = T)
       updateSelectizeInput(session,"hiv_present_column", choices = colnames(df), selected = hiv_col_pred, server = T)
+      updateSelectizeInput(session,"visit_type", choices = df[["VisitType"]], selected = NULL, server = T)
+      updateAirDateInput(session, "visit_date_range",  options = list(
+        minDate = min(as_date(mdy_hm(df[["Date/Time"]])), na.rm = TRUE), 
+        maxDate = max(as_date(mdy_hm(df[["Date/Time"]])), na.rm = TRUE)
+      ))
     }
   })
   
+
   input_df_filtered <- reactive({
     req(input_df())
     df <- input_df()
