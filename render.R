@@ -1,7 +1,7 @@
 library(quarto)
 library(tidyverse)
 
-load("G:/Press Ganey II/Reports/Ad Hoc/DEEP DIVE/Key Driver Reports/data/commentdata.Rdata")
+# load("G:/Press Ganey II/Reports/Ad Hoc/DEEP DIVE/Key Driver Reports/data/commentdata.Rdata")
 
 npi_nums<-commentdata %>%
   distinct(npi_num) %>%
@@ -16,7 +16,7 @@ names<-commentdata %>%
 
 reports<-
   tibble(
-    input="output.qmd",
+    input="recognition.qmd",
     output_file = str_glue("{names}.html"),
     execute_params=map(npi_nums,~list(npi=.))
   )
