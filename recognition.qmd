@@ -22,7 +22,7 @@ library(gt)
 
 # #import & clean data
 # 
-# ptexp_sampledata <- read.csv("C:/Users/4477078/OneDrive - Moffitt Cancer Center/Hackathon/data.csv")
+# ptexp_sampledata <- read.csv("C:/Users/4477078/OneDrive - Moffitt Cancer Center/Hackathon/ptexp_sampledata.csv")
 # 
 # commentdata<-ptexp_sampledata[-c(2535,2536), ]%>% #remove extra lines of info
 #   clean_names()
@@ -62,6 +62,18 @@ y <-str_replace_all(x, " ", "") #remove spaces in response text
 filter_npi$check1 <- grepl(last_nm,  y)
 filter_npi$check2 <- grepl(first_nm, y)
 
+comments_all <- filter_npi %>%
+  select(response)%>%
+  rename('Positive Comments' = response) %>%
+  gt() %>%
+  cols_align(align="left",columns = everything())%>%
+  tab_options(column_labels.background.color = 'dodgerblue4')%>%
+  tab_style(style=cell_text(align="center"),
+            locations = cells_column_labels(columns = everything())
+            )
+comments_all #all positive comments
+
+
 named_comments <- filter_npi %>%
   filter(check1 == 'TRUE' | check2 == 'TRUE') 
 
@@ -87,6 +99,7 @@ bigram_sentiment <- bigrams_separated %>%
   arrange(resource_name, desc(total_sentiment)) %>%
   ungroup() %>%
   select(response) %>%
+  rename('Positive Comments' = response) %>%
   gt() %>%
   cols_align(align="left",columns = everything())%>%
   tab_options(column_labels.background.color = 'dodgerblue4')%>%
@@ -94,6 +107,6 @@ bigram_sentiment <- bigrams_separated %>%
             locations = cells_column_labels(columns = everything())
             )
 
-bigram_sentiment
+bigram_sentiment #named comments sorted
 
 ```
